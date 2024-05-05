@@ -25,10 +25,11 @@ class MyApp extends StatelessWidget {
 }
 
 class CropData {
+  final int id; // Store crop ID
   final String name;
   final String imageUrl;
 
-  CropData({required this.name, required this.imageUrl});
+  CropData({required this.id, required this.name, required this.imageUrl}); // Include crop ID
 }
 
 class CropImageSearch extends StatefulWidget {
@@ -44,7 +45,7 @@ class _CropImageSearchState extends State<CropImageSearch> {
   @override
   void initState() {
     super.initState();
-    _fetchCropData();
+    _fetchCropData(); // Fetch crop data from the backend
   }
 
   void _fetchCropData() async {
@@ -62,12 +63,13 @@ class _CropImageSearchState extends State<CropImageSearch> {
         String baseUrl = 'http://127.0.0.1:8000'; // Base URL for image paths
 
         for (var crop in data) {
+          int cropId = crop['id']; // Unique identifier for each crop
           String imageUrl = crop['image']; // Assumed key for image URL
           if (!imageUrl.startsWith('http')) {
             imageUrl = '$baseUrl$imageUrl'; // Ensure full URL
           }
           String cropName = crop['name']; // Assumed key for crop name
-          cropDataList.add(CropData(name: cropName, imageUrl: imageUrl));
+          cropDataList.add(CropData(id: cropId, name: cropName, imageUrl: imageUrl));
         }
 
         setState(() {
@@ -78,7 +80,7 @@ class _CropImageSearchState extends State<CropImageSearch> {
         throw Exception('Failed to load crop data');
       }
     } catch (e) {
-      print('Error fetching crop data: $e');
+      print('Error fetching crop data: $e'); // Basic error handling
     }
   }
 
@@ -93,7 +95,7 @@ class _CropImageSearchState extends State<CropImageSearch> {
             // Implement desired behavior for a found image
           },
           onSmartSeederIconPressed: () {
-            // Implement desired behavior for the icon press
+            // Define behavior for smart seeder icon press
           },
         ),
       ),
@@ -102,20 +104,23 @@ class _CropImageSearchState extends State<CropImageSearch> {
           Expanded(
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Adjust the number of images in a row
+                crossAxisCount: 3, // Number of items per row
                 crossAxisSpacing: 10.0, // Consistent spacing between items
-               // Consistent spacing between rows
+                mainAxisSpacing: 10.0, // Consistent spacing between rows
               ),
               itemCount: _filteredDataList.length,
               itemBuilder: (BuildContext context, int index) {
                 final crop = _filteredDataList[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigate to InfoPage, passing the crop name
+                    // Navigate to InfoPage, passing crop name and ID
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => InfoPage(cropName: crop.name), 
+                        builder: (context) => InfoPage(
+                          cropName: crop.name,
+                          cropId: crop.id, // Pass crop ID
+                        ),
                       ),
                     );
                   },
@@ -136,7 +141,7 @@ class _CropImageSearchState extends State<CropImageSearch> {
                               ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: Text(
                             crop.name,
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -151,14 +156,15 @@ class _CropImageSearchState extends State<CropImageSearch> {
           ),
           Container(
             height: 40,
-            child: Footer(
-              onBackButtonPressed: () {
-                // Implement back button behavior
-              },
-              onHomePageButtonPressed: () {
-                // Implement home page behavior
-              }
-            ),
+            child :Footer(
+            onBackButtonPressed: () {
+              //if(Navigator.size())
+             // Navigator.pop(context);
+            },
+            onHomePageButtonPressed: () {
+              Navigator.popUntil(context, ModalRoute.withName('/'));
+            },
+          ),
           ),
         ],
       ),

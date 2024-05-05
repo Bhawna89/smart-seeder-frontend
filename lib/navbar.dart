@@ -88,7 +88,7 @@ class NavBar extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ImageScreen(imageUrl: imageUrl, cropName: foundCrop['name']),
+                builder: (context) => ImageScreen(imageUrl: imageUrl, cropName: foundCrop['name'],cropid: foundCrop['id']),
               ),
             );
           } else {
@@ -116,11 +116,12 @@ class NavBar extends StatelessWidget {
 class ImageScreen extends StatelessWidget {
   final String imageUrl;
   final String cropName;
-
+   final int cropid;
   const ImageScreen({
     Key? key,
     required this.imageUrl,
     required this.cropName,
+    required this.cropid,
   }) : super(key: key);
 
   @override
@@ -151,7 +152,7 @@ class ImageScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => InfoPage(cropName: cropName),
+                          builder: (context) => InfoPage(cropName: cropName,cropId: cropid),
                         ),
                       );
                     },
